@@ -2,8 +2,10 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const path = require("path");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
+    mode: process.env.NODE_ENV,
     entry: {
         main: "./src/main.js"
     },
@@ -58,7 +60,10 @@ module.exports = {
                 collapseWhitespace: true
             }
         }),
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        new Dotenv({
+            path: process.env.NODE_ENV === "production" ? "./.env.production" : "./.env"
+        })
     ],
     resolve: {
         extensions: ["*", ".js", ".vue", ".json"]
