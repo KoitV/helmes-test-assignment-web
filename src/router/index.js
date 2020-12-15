@@ -6,18 +6,20 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: '/edit-user/:id',
+        path: "/edit-user/:id",
+        name: "user.edit",
         component: User,
-        props: route => ({id: Number.parseInt(route.params.id)})
+        props: true
     },
     {
-        path: '/create-user',
+        path: "/create-user",
+        name: "user.create",
         component: User,
-        props: route => ({id: Number.parseInt(route.params.id)})
+        props: true
     }
 ];
 
 export default new VueRouter({
-    mode: 'history',
+    mode: "history",
     routes
 });

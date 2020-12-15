@@ -1,159 +1,224 @@
 <template>
-  <div v-if="isValidId()">
-    {{ this.id }}
-  </div>
-  <div v-else>
-    <div>Please enter your name and pick the Sectors you are currently involved in.
-      <br>
-      <br>
-      Name:
-      <v-form>
-        <v-text-field label="Name"/>
-      </v-form>
-
-      <br>
-      <br>
-      Sectors:
-      <select multiple="" size="5">
-        <option value="1">Manufacturing</option>
-        <option value="19">    Construction materials</option>
-        <option value="18">    Electronics and Optics</option>
-        <option value="6">    Food and Beverage</option>
-        <option value="342">        Bakery & confectionery products</option>
-        <option value="43">        Beverages</option>
-        <option value="42">        Fish & fish products </option>
-        <option value="40">        Meat & meat products</option>
-        <option value="39">        Milk & dairy products </option>
-        <option value="437">        Other</option>
-        <option value="378">        Sweets & snack food</option>
-        <option value="13">    Furniture</option>
-        <option value="389">        Bathroom/sauna </option>
-        <option value="385">        Bedroom</option>
-        <option value="390">        Children’s room </option>
-        <option value="98">        Kitchen </option>
-        <option value="101">        Living room </option>
-        <option value="392">        Office</option>
-        <option value="394">        Other (Furniture)</option>
-        <option value="341">        Outdoor </option>
-        <option value="99">        Project furniture</option>
-        <option value="12">    Machinery</option>
-        <option value="94">        Machinery components</option>
-        <option value="91">        Machinery equipment/tools</option>
-        <option value="224">        Manufacture of machinery </option>
-        <option value="97">        Maritime</option>
-        <option value="271">            Aluminium and steel workboats </option>
-        <option value="269">            Boat/Yacht building</option>
-        <option value="230">            Ship repair and conversion</option>
-        <option value="93">        Metal structures</option>
-        <option value="508">        Other</option>
-        <option value="227">        Repair and maintenance service</option>
-        <option value="11">    Metalworking</option>
-        <option value="67">        Construction of metal structures</option>
-        <option value="263">        Houses and buildings</option>
-        <option value="267">        Metal products</option>
-        <option value="542">        Metal works</option>
-        <option value="75">            CNC-machining</option>
-        <option value="62">            Forgings, Fasteners </option>
-        <option value="69">            Gas, Plasma, Laser cutting</option>
-        <option value="66">            MIG, TIG, Aluminum welding</option>
-        <option value="9">    Plastic and Rubber</option>
-        <option value="54">        Packaging</option>
-        <option value="556">        Plastic goods</option>
-        <option value="559">        Plastic processing technology</option>
-        <option value="55">            Blowing</option>
-        <option value="57">            Moulding</option>
-        <option value="53">            Plastics welding and processing</option>
-        <option value="560">        Plastic profiles</option>
-        <option value="5">    Printing </option>
-        <option value="148">        Advertising</option>
-        <option value="150">        Book/Periodicals printing</option>
-        <option value="145">        Labelling and packaging printing</option>
-        <option value="7">    Textile and Clothing</option>
-        <option value="44">        Clothing</option>
-        <option value="45">        Textile</option>
-        <option value="8">    Wood</option>
-        <option value="337">        Other (Wood)</option>
-        <option value="51">        Wooden building materials</option>
-        <option value="47">        Wooden houses</option>
-        <option value="3">Other</option>
-        <option value="37">    Creative industries</option>
-        <option value="29">    Energy technology</option>
-        <option value="33">    Environment</option>
-        <option value="2">Service</option>
-        <option value="25">    Business services</option>
-        <option value="35">    Engineering</option>
-        <option value="28">    Information Technology and Telecommunications</option>
-        <option value="581">        Data processing, Web portals, E-marketing</option>
-        <option value="576">        Programming, Consultancy</option>
-        <option value="121">        Software, Hardware</option>
-        <option value="122">        Telecommunications</option>
-        <option value="22">    Tourism</option>
-        <option value="141">    Translation services</option>
-        <option value="21">    Transport and Logistics</option>
-        <option value="111">        Air</option>
-        <option value="114">        Rail</option>
-        <option value="112">        Road</option>
-        <option value="113">        Water</option>
-      </select>
-
-      <br>
-      <br>
-      <input type="checkbox"> Agree to terms
-
-      <br>
-      <br>
-      <input type="submit" value="Save"></div>
-  </div>
+  <v-card elevation="2">
+    <v-container>
+      <v-row v-if="successMessage !== null">
+        <v-col>
+          <v-alert type="success" transition="scroll-y-transition">
+            {{ successMessage }}
+          </v-alert>
+        </v-col>
+      </v-row>
+      <v-row v-if="errorMessages.length > 0" >
+        <v-col>
+          <v-alert
+              type="error"
+              dismissible
+              transition="scroll-y-transition"
+              v-for="(errorMessage, index) in errorMessages"
+              :key="index"
+              dense
+          >
+            {{ errorMessage }}
+          </v-alert>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          Please enter your name and pick the Sectors you are currently involved in.
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-text-field label="First name" filled v-model="firstName"/>
+          <v-text-field label="Last name" filled v-model="lastName"/>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          Sectors:
+          <v-treeview
+              selectable
+              :items="allSectors"
+              hoverable
+              v-model="selectedSectors"
+              label="Sectors"
+          >
+          </v-treeview>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-checkbox
+              v-model="hasAgreedToTerms"
+              label="Agree to terms"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-btn
+              color="primary"
+              elevation="2"
+              @click="save"
+          >Save
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
-import {VForm, VTextField} from "vuetify/lib";
+import {
+  VForm,
+  VTextField,
+  VTreeview,
+  VCard,
+  VContainer,
+  VCheckbox,
+  VBtn,
+    VAlert
+} from "vuetify/lib";
 
 export default {
   name: "User",
 
   components: {
     VTextField,
-    VForm
+    VTreeview,
+    VForm,
+    VCard,
+    VContainer,
+    VCheckbox,
+    VBtn,
+    VAlert
   },
 
   props: {
     id: {
-      type: Number
+      type: String
     }
   },
 
   data() {
     return {
-      name: '',
-      sectors: [],
-      agreedToTerms: false
+      firstName: '',
+      lastName: '',
+      selectedSectors: [],
+      hasAgreedToTerms: false,
+
+      allSectors: [],
+      successMessage: null,
+      errorMessages: [],
     }
   },
 
   mounted() {
-    if(this.id)
-      this.fetchUser();
+    axios.get('/sectors')
+        .then(response => response.data)
+        .then(data => {
+          this.allSectors = data;
+        })
+        .then(() => {
+          if(this.id)
+            this.fetchUser();
+        })
   },
 
   methods: {
     fetchUser() {
-      axios.get(`/api/users/${this.id}`)
+      axios.get(`/users/${this.id}`)
           .then(response => response.data)
-          .then(response => {
-            this.name = response.name;
-            this.sectors = response.sectors;
-            this.agreedToTerms = response.agreedToTerms;
+          .then(data => {
+            this.firstName = data.firstName;
+            this.lastName = data.lastName;
+
+            this.selectedSectors = data.sectors.map(sector => {
+              console.log(sector);
+              return sector.id;
+            });
+
+            this.hasAgreedToTerms = data.hasAgreedToTerms;
           })
           .catch(error => {
             console.log('Loading user failed.');
           })
     },
 
-    isValidId() {
-      console.log(Number.isNaN(this.id));
+    save() {
+      this.errorMessages = [];
 
-      return !Number.isNaN(this.id);
+      if(this.hasValidId())
+        this.update();
+      else
+        this.create();
+    },
+
+    create() {
+      axios.post('/users', {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        sectorIds: this.selectedSectors,
+        hasAgreedToTerms: this.hasAgreedToTerms
+      })
+        .then(response => {
+          this.successMessage = "User successfully created.";
+
+          let jwt = response.headers.authorization.replace("Bearer ", "");
+
+          window.sessionStorage.setItem("jwt", jwt);
+
+          setTimeout(() => {
+            this.successMessage = null;
+          }, 5000)
+
+          this.$router.push({name: "user.edit", params: {id: response.data.id}})
+        })
+        .catch(this.handleError)
+    },
+
+    update() {
+      let headers = {};
+
+      let jwtToken = window.sessionStorage.getItem('jwt');
+
+      if(jwtToken !== null)
+        headers.Authorization = `Bearer ${jwtToken}`
+
+      axios.put(`/users/${this.id}`, {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        sectorIds: this.selectedSectors,
+        hasAgreedToTerms: this.hasAgreedToTerms
+      }, {
+        headers: headers
+      }).then(response => response.data)
+        .then(data => {
+          this.successMessage = "User successfully updated.";
+
+          setTimeout(() => {
+            this.successMessage = null;
+          }, 5000)
+        })
+        .catch(this.handleError)
+    },
+
+    handleError(error) {
+      if(error.response.status === 400) {
+        this.errorMessages.push(error.response.data.title);
+
+        let violations = error.response.data.violations;
+        violations.forEach(violation => {
+          this.errorMessages.push(violation.title);
+        })
+
+      } else if(error.response.status === 500 || error.response.status === 403) {
+        this.errorMessages.push(error.response.data.detail);
+      }
+    },
+
+    hasValidId() {
+      return this.id !== undefined;
     }
   }
 }
